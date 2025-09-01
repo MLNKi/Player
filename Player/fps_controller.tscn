@@ -1,0 +1,732 @@
+[gd_scene load_steps=37 format=4 uid="uid://ckrkb6up3ft"]
+
+[ext_resource type="Script" uid="uid://c5owa6wrdf7hc" path="res://Player/Controller/Scripts/fps_controller.gd" id="1_g2c50"]
+[ext_resource type="Script" uid="uid://ddq0qdbeacxmt" path="res://Player/Controller/Scripts/init_weapon.gd" id="2_f6whd"]
+[ext_resource type="Script" uid="uid://cnv16md4my8ow" path="res://Player/Controller/Scripts/reticle.gd" id="2_u0brt"]
+[ext_resource type="Resource" uid="uid://c56f78di51pwk" path="res://Player/Controller/Meshes/Weapons/Crowbar/CrowbarInventory.tres" id="3_f6whd"]
+[ext_resource type="Theme" uid="uid://dqqwanksfv86h" path="res://Player/UI/Themes/Debug.tres" id="3_rgc6g"]
+[ext_resource type="Script" uid="uid://crnuo0xh0btvq" path="res://Player/Controller/Scripts/debug.gd" id="4_28gv0"]
+[ext_resource type="ArrayMesh" uid="uid://bs7ipgvy5g3x3" path="res://Player/Controller/Meshes/Weapons/Flashlight/Flashlight.res" id="4_f6whd"]
+[ext_resource type="Script" uid="uid://cx4n8qqmw865g" path="res://Player/Controller/Scripts/state_machine.gd" id="5_kk6m4"]
+[ext_resource type="Script" uid="uid://ibkw5coyjeqg" path="res://Player/Controller/Scripts/idle_player_state.gd" id="6_0aebk"]
+[ext_resource type="Script" uid="uid://cat14xp2uto3g" path="res://Player/Controller/Scripts/walking_player_state.gd" id="7_268ag"]
+[ext_resource type="Script" uid="uid://c6sht1rahtysl" path="res://Player/Controller/Scripts/crouching_player_state.gd" id="9_jyql6"]
+[ext_resource type="Script" uid="uid://berxa7tbqdq7w" path="res://Player/Controller/Scripts/sliding_player_state.gd" id="10_100wk"]
+[ext_resource type="Script" uid="uid://djgjvkan8kqot" path="res://Player/Controller/Scripts/sprinting_player_state.gd" id="10_iueou"]
+[ext_resource type="Script" uid="uid://cr1ahlh2srsxt" path="res://Player/Controller/Scripts/jumping_player_state.gd" id="11_100wk"]
+[ext_resource type="Script" uid="uid://cfmtikp3w4gnb" path="res://Player/Controller/Scripts/falling_player_state.gd" id="12_ytt2e"]
+[ext_resource type="Script" uid="uid://dxxo5ya5tfy16" path="res://Player/Controller/Scripts/WeaponVieport.gd" id="14_1hlee"]
+[ext_resource type="Script" uid="uid://cnpgiot6lv2fx" path="res://Player/Controller/Scripts/WeaponCamera.gd" id="15_jynee"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_0vg3i"]
+radius = 0.579622
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0vg3i"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_0vg3i"]
+radius = 0.6
+
+[sub_resource type="Gradient" id="Gradient_f6whd"]
+interpolation_mode = 2
+offsets = PackedFloat32Array(0, 0.850746)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_f6whd"]
+seed = 120
+frequency = 0.1385
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_f6whd"]
+color_ramp = SubResource("Gradient_f6whd")
+noise = SubResource("FastNoiseLite_f6whd")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gal88"]
+resource_name = "CrowBar"
+cull_mode = 2
+albedo_color = Color(0.531621, 0.255714, 0.255714, 1)
+metallic = 0.7
+roughness = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ydq3a"]
+resource_name = "Material.005"
+cull_mode = 2
+albedo_color = Color(0.221484, 0.221484, 0.221484, 1)
+metallic = 0.7
+roughness = 0.5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_qho7p"]
+_surfaces = [{
+"aabb": AABB(-0.0184067, -0.679345, -0.0184066, 0.0368135, 0.901377, 0.0368133),
+"format": 34896613377,
+"index_count": 48,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAAAAIAAwAFAAEABAACAAYAAwAHAAUACAAEAAYABwAJAAUACAAGAAoABwALAAkADAAIAAoACwANAAkADAAKAA4ACwAPAA0ADwAMAA4ADwAOAA0A"),
+"name": "CrowBar",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 16,
+"vertex_data": PackedByteArray("fSUAAH0lAAD/f///AAAAAH0l//99JQAA/38AAAAAAAAAAAAA/38AAIHa//99JQAAAAD///9/AACB2gAAfSUAAH0lAACB2gAA/v////9/AAB9Jf//gdoAAP//AAD/fwAA/38AAP//AACB2v//gdoAAP9//////wAAgdoAAIHaAAA=")
+}, {
+"aabb": AABB(-0.0470919, -0.822799, -0.0288176, 0.196457, 1.25981, 0.0576353),
+"format": 34359742465,
+"index_count": 744,
+"index_data": PackedByteArray("AAABAEYAAAAEAAEAAwAAAEYABAApAAEABAAGACkAAwBGAAIABQADAAIAAQBHAEYABQACACgACAAFACgARgBIAAIARgBHAEgAAgBJACgAAgBIAEkACAAoAAkACgAIAAkAKABJAEoAKABKAAkACgAJACwABwAKACwACQBKAEsACQBLACwABwAsACsABgAHACsABgArACkALABMACsALABLAEwAKwBNACkAKwBMAE0AKQBNAE4AKQBOAAEAAQBOAEcATQBPAE4ATABQAE0ATQBQAE8ATABRAFAASwBRAEwATgBSAEcATgBPAFIARwBSADIARwAyAEgASwAtAFEASgAtAEsASAAyADAASAAwAEkASQBTAEoASgBTAC0ASQAwAFMALQAqAFEAUwAvAC0ALQAvACoAMABUAFMAUwBUAC8AMABVAFQAMgBVADAAUQAqAFYAUQBWAFAAMgBXAFUAUgBXADIAVQAuAFQAUgBYAFcATwBYAFIAVwAzAFUAVQAzAC4AWABZAFcAVwBZADMATwBaAFgAUABaAE8AUABWAFoAWgA0AFgAWAA0AFkAVgBbAFoAWgBbADQAVgBcAFsAKgBcAFYAWwBdADQAKgBeAFwALwBeACoAXABfAFsAWwBfAF0AXgBgAFwAXABgAF8ALwBhAF4AVABhAC8AVAAuAGEAYQBiAF4AXgBiAGAALgBjAGEAYQBjAGIALgBkAGMAMwBkAC4AYwAPAGIAMwBlAGQAWQBlADMAZABmAGMAYwBmAA8AZQANAGQAZAANAGYAWQBnAGUANABnAFkANABdAGcAZwBoAGUAZQBoAA0AXQAMAGcAZwAMAGgAXQBpAAwAXwBpAF0AaAAMADcADQBoABEAaAA3ABEADABqADcADABpAGoAXwALAGkAYAALAF8AaQA2AGoAaQALADYANwBqAGsANgBrAGoAYAAxAAsAYgAxAGAAYgAPADEACwAxADUACwA1ADYAMQAPAGwAMQBsADUADwAXAGwADwBmABcAZgA6ABcAZgANADoADQARADoAOgBtABcAbAAXAG0AEQASADoAbQA6ABIANQBsADgAbABtADgANQAQADYAawA2ABAANQA4AG4AEAA1AG4AbgA4ABwAOABtABsAOAAbABwAbgAcABoAHAAbABoAbwBuABoAEABuAG8AGAAaABsAbQAYABsAGAAZABoAbwAaABkAbwAZABgAbQBwABgAbwAYAHAAbQASAHAAbwBwABIAbwASABAAEAASAHEAEABxAHIAawAQAHIAEgA7AHEAEgARADsAcgBxABYAawByABUAcgAWABUAcQATABYAFQAWABMAcQA7ABMAawAVABQAFQATABQAOwAOABMAFAATAA4AOwA5AA4AOQAUAA4AOQBrABQAEQA5ADsANwBrADkAEQA3ADkAPABzACMAIwBzAHQAPAAjAHUAIwB0AHUAPAB2AHMAcwB3AHQAcwB2AHcAdQB0AHgAdAB3AEQAdABEAHgAdwB5AEQAdQB4AD4APAB1AHoAegB1AD4AewA8AHoAewB2ADwAdgB8AHcAdwB8AHkAdgB9AHwAdgB7ACEAdgAhAH0AIQB7AH4AfQB/AHwAfQAhAH8AfACAAHkAfAB/AIAAfgB7AD0AewB6AD0AIQB+AIEAIQCBAH8AfgA9AIEAfwCCAIAAfwCBAIIAgQA9AIMAgQCDAIIAPQB6AD8APQA/AIMAegA+AD8AgACCAEEAggCDAEAAggBAAEEAgwA/AIQAgwCEAEAAPwA+AIUAPwCFAIQAQQBAACIAQAAlACIAQACEACUAQQAiAB4AhAAnACUAhACFACcAhQAmACcAHQBBAB4AgABBAB0AHQAeAB8AeQCAAB0AhQBCACYAPgBCAIUAQgAkACYAPgB4AEIAQgBFACQAeABFAEIARQAgACQAeABEAEUARQBDACAARABDAEUARAB5AEMAeQAdAEMAQwAfACAAQwAdAB8A"),
+"lods": [0.0120555, PackedByteArray("AAABAAIAAwAAAAIAAAAEAAEABQADAAIABQACACgACAAFACgABAApAAEABAAGACkAKQAqAAEABgArACkAKwAqACkABgAHACsABwAsACsABwAKACwACgAIAAkACgAJACwACAAoAAkALAAtACsACQAtACwALQAqACsAKAAuAAkACQAuAC0ALQAvACoALgAvAC0AKAAwAC4ALwAxACoAMgAwACgAAgAyACgAMAAzAC4AMgAzADAAAgA0ADIANAAzADIAAQA0AAIAKgALAAEAAQALADQAKgAxAAsAMwANAC4ALgANAC8ANAAMADMACwAMADQAMwAMAA0ALwAPADEALwANAA8ACwAxADUAMQAPADUADAALADYACwA1ADYADAA2ADcADQAMADcANQAQADYANQAPADgAEAA1ADgADwANABcADwAXADgANgA5ADcAOQA2ABAADQA3ABEAEQA3ADkADQARADoADQA6ABcAEQASADoAFwA6ABIAEgARADsAEQA5ADsAOwA5AA4AOQAUAA4AOwAOABMAFAATAA4AEgA7ABMAOQAVABQAFQATABQAOQAQABUAFQAWABMAEgATABYAFQASABYAEAASABUAEAAYABIAFwASABgAEAAZABgAEAAaABkAGAAZABoAEAA4ABoAFwAYABsAOAAXABsAGAAaABsAOAAcABoAHAAbABoAOAAbABwAIwA8ACEAIQA8AD0APAAjAD4APQA8AD8APAA+AD8APQA/AEAAIQA9AEAAQAA/ACUAPwAnACUAPwA+ACcAQAAlACIAPgAmACcAQQBAACIAIQBAAEEAQQAiAB4APgBCACYAQgAkACYAHQBBAB4AHQAhAEEAHQAeAB8AIQAdAEMAQwAdAB8AIwAhAEMAQwAfACAAIwBDAEQAIwBEAD4ARQBDACAARABDAEUARQAgACQAPgBEAEUAQgBFACQAPgBFAEIA"), 0.038269, PackedByteArray("AAABAAIAAwAAAAIAAAAEAAEABQADAAIABAAGAAEABgAHAAEACAAFAAIABwAJAAEACAACAAkABwAKAAkACgAIAAkAAQALAAIAAQAJAAsAAgAMAAkAAgALAAwACQAMAA0ADAALAA4ADQAMAA4ACQAPAAsACQANAA8ACwAPABAACwAQAA4ADQAOABEADQARABIAEQAOABMAEgARABMAFAATAA4ADgAVABQAFQATABQADgAQABUAFQAWABMAEgATABYAFQASABYAEAASABUADQASABcADwANABcAEAAYABIAFwASABgAEAAZABgAEAAaABkAGAAZABoAEAAPABoAFwAYABsADwAXABsAGAAaABsADwAcABoAHAAbABoADwAbABwAHQAeAB8AHQAfACAAHQAhAB4AIQAiAB4AIwAdACAAIwAhAB0AIQAjACIAIwAgACQAIgAjACUAJgAjACQAIwAnACUAJwAjACYA")],
+"name": "Material.005",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 134,
+"vertex_data": PackedByteArray("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")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_3gvbh"]
+resource_name = "HL_Cylinder_036"
+_surfaces = [{
+"aabb": AABB(-0.0184067, -0.679345, -0.0184066, 0.0368135, 0.901377, 0.0368133),
+"attribute_data": PackedByteArray("/x/YegAABRP/HwUTAADYev//2Hr/3wUT//8FE//f2Hr/P9h6/x8FE/8/BRP/H9h6/1/Yev8/BRP/XwUT/z/Yev9/2Hr/XwUT/38FE/9f2Hr/n9h6/38FE/+fBRP/f9h6/7/Yev+fBRP/vwUT/5/Yev/f2Hr/vwUT/98FE/+/2Ho="),
+"format": 34896613399,
+"index_count": 48,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEAFAAVABYAFAAXABUAGAAZABoAGAAbABkAHAAdAB4AHAAfAB0A"),
+"material": SubResource("StandardMaterial3D_gal88"),
+"name": "CrowBar",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 32,
+"vertex_data": PackedByteArray("fSUAAH0l9+//f///AAD+730l//99Jf7v/38AAAAA9+//fwAAAAD374Ha//99Jf7v/3///wAA/u+B2gAAfSX37wAAAAD/f/bPfSX//30l/88AAP///3//z30lAAB9JfbPfSUAAIHaCLAAAP///3//r30l//+B2v+vAAAAAP9/CLD/fwAA//8HkH0l//+B2v+P/3///////499JQAAgdoHkIHaAACB2geQ/3///////4+B2v//gdr/j/9/AAD//weQ//8AAP9/BrCB2v//gdr/r/7/////f/+vgdoAAIHaBrCB2gAAfSX3z/7/////f//Pgdr//30l/8///wAA/3/3z9R/9///f////3///9R/9/8igAUA/38AAP9/AAAigAUAVn+7//9/////f///Vn+7/wR/aP//f////3///wR/aP8of0v//3////9///8of0v/r4CTAP9/AAD/fwAAr4CTAI2AVQD/fwAA/38AAI2AVQBegCYA/38AAP9/AABegCYA")
+}, {
+"aabb": AABB(-0.0470919, -0.822799, -0.0288176, 0.196457, 1.25981, 0.0576353),
+"attribute_data": PackedByteArray("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"),
+"format": 34359742487,
+"index_count": 744,
+"index_data": PackedByteArray("fAB9AH4AfAB/AH0ABACAAAEABACBAIAABQBRAFAABQAGAFEAggBSAIMAggAIAFIAhAAHAIUAhAAJAAcAhgCHAIgAhgCJAIcAAwCKAAIAAwAAAIoACwAKAFMACwAMAAoAVQCLAFQAVQCMAIsAjQCMAFUAjACNAFYAVgCNAI4AjABWAI8AkAAOAA8AkABXAA4AkQCQAA8AkQAPABEAEACQAJEAkgBXAJAAEACSAJAAkgCTAFcAEgCUAJIAEgCSAFoAkgAQAFoAlQASAFoAlQBaAJYAlwBaABAAWgCXAJYAlwAQAJgAmQCWAJcAlwCYABUAmQCXAFwAlwAVABYAXACXABYAXAAWABMAXQAXABgAXQCaABcAmwCaAF0AmwAZAJoADQAZAJsADQCcABkAYgAgAB4AYgBgACAAHQBgAGIAHQBfAGAAnQBfAB0AnQAhAF8AngCfACoAngCgAJ8AoAChAJ8AoACiAKEAogCjAKEAogCkAKMApABkAKMApAClAGQApQCmAGQApQCnAKYApwArAKYApwCoACsAIgCpAKoAIgCrAKkAqwCsAKkAqwCtAKwArQCuAKwArQCvAK4ArwCwAK4ArwBuALAAbgCxALAAbgCyALEAsgCzALEAsgAjALMAcAC0ALUAcAC2ALQAtgC3ALQAtgBvALcAbwC4ALcAbwBtALgAbQC5ALgAbQC6ALkAugC7ALkAugC8ALsAvAAkALsAvAC9ACQAbAC+AGoAbAC/AL4AvwDAAL4AvwDBAMAAwQDCAMAAwQBpAMIAaQDDAMIAaQDEAMMAxADFAMMAxADGAMUAxgBrAMUAxgDHAGsAyADJACYAyADKAMkAygDLAMkAygDMAMsAzADNAMsAzADOAM0AzgDPAM0AzgDQAM8A0ADRAM8A0ADSANEA0gAlANEA0gDTACUA1AAlANUA1ADVANYA1wDUANYA1wDWANgA2QDXANgA2QDYANoA2wDZANoA2wDaANwA3QDbANwA3QDcAN4AJwDdAN4AJwDeAN8A4ADhACgA4ADiAOEA4gBmAOEA4gDjAGYA4wDkAGYA4wDlAOQA5QDmAOQA5QBoAOYAaADnAOYAaADoAOcA6ADpAOcA6ADqAOkA6wDsAGMA6wDtAOwA7QBlAOwA7QDuAGUA7gDvAGUA7gDwAO8A8ABnAO8A8ADxAGcA8QDyAGcA8QDzAPIA8wD0APIA8wApAPQAWQD1AFgAWQD2APUA9wBeAPgA9wAbAF4AXgD5APgA+QAaAPoA+QD7ABoA+QAcAPsA+QBeABwA/AAcAF4A/QD8AF4A/QD+APwAHAD8AGEAHABhAP8A/wBhAAAB/wAAAR8AFAABAVsAFAACAQEBLAAtAC4ALwAwADEAAwEzAAQBAwE1ADMABQE0ADIABQEGATQANgAHAQgBNgA3AAcBCQE5ADgACQEKATkAOgA7ADwAOgA9ADsAPgA/AEAAPgBBAD8ACwFKAEkACwEMAUoAcQAMAQsBcQByAAwBDQFyAHEADQEOAXIAcwAOAQ0BcwBIAA4BDwFOAE8ADwF7AE4AeQB7AA8BeQAQAXsAEQEQAXkAEQESARABSwASAREBSwATARIBEgF4ABABEAF4ABQBEAEUARUBFQEUARYBFQEWARcBEgEYAXgAGQEYARIBGQEaARgBGgEbARgBGgEcARsBGAEbAR0BGAEdAXgAeAAdAR4BeAAeAXoAegAeAR8BegAfAU0AdQAgASEBdQAiASABIwEiAXUAIwEkASIBdAAkASMBdAAlASQBJgElAXQAJgEnASUBKAEmAXQAKAF0ACkBKQF0ACMBKQEjASoBKgEjASsBKgErASwBLAErAUcALAFHAC0BLgFDAC8BLgF2AEMAMAF2AC4BMAExAXYAMgExATABMgEzATEBRgAzATIBRgA0ATMBdwBEAEUAdwBCAEQANQFCAHcANQE2AUIANwE2ATUBNwE4ATYBOQE4ATcBOQFMADgB"),
+"lods": [0.0120555, PackedByteArray("AAABAAIAAwAAAAIAAAAEAAEABABQAAEABAAFAFAABQBRAFAABQAGAFEABgBSAFEABgAIAFIACAAHAFIACAAJAAcACQBTAAcACQALAFMACwAKAFMACwAMAAoAVABVAFYAVwAOAA8AEABXAA8AEAAPABEAEABYAFcAWAANAFcAWQANAFgAEgBZAFgAEgBYAFoAWAAQAFoAFAASAFoAFABaAFsAWgBcAFsAXABaABAAXAAQABUAXAAVABYAXAAWABMADQAZAF0AXQAXABgAXQAZABcAGQAaABcADQAbABkAGQAcABoAGwBeABkAGQBeABwAGwAdAF4AHQAcAF4AGwBfAB0AGwAhAF8AHQBfAGAAHAAdAGEAHQBgAGIAYgBgACAAYgAgAB4AHABhAB4AHAAeAB8AYwBkACoAYwBlAGQAZgBlAGMAKABmAGMAZQBnAGQAZgBnAGUAZwArAGQAZwApACsAaABnAGYAaAApAGcAKABoAGYAJwBoACgAJQApAGgAJwAlAGgAaQAlACYAagBpACYAaQBrACUAbABpAGoAbQBrAGkAbQAkAGsAbQAjACQAbgAjAG0AbwBtAGkAbgBtAG8AbwBpAGwAIgBuAG8AcABvAGwAIgBvAHAALAAtAC4ALwAwADEAMgAzADQAMgA1ADMANgA3ADgAOAA3ADkAOgA7ADwAOgA9ADsAPgA/AEAAPgBBAD8AcQBKAEkAcQByAEoAcwByAHEAcwBIAHIAdABzAHEARgBzAHQAdQBxAEkAdABxAHUARgB0AHUAdQBJAEcARgB1AHYAdgB1AEcAdgBHAEMAQgBGAHYAQgB2AEMAQgBDAEQAdwBCAEQATABCAHcAdwBEAEUASwBMAHcASwB3AHgASwB4AHkAegB3AEUAeAB3AHoAeQB4AHoAegBFAE0AewB6AE0AeQB6AHsAewBNAE4AeQB7AE4AeQBOAE8A"), 0.038269, PackedByteArray("AAABAAIAAwAAAAIAAAAEAAEABAAFAAEABQAGAAEABgAHAAEABgAIAAcACAAJAAcACQAKAAcACQALAAoACwAMAAoADQAOAA8AEAAPABEAEAANAA8AEgANABAAEgAQABMAFAASABMAEwAQABUAEwAVABYADQAXABgADQAZABcAGQAaABcADQAbABkAGQAcABoAGwAcABkAGwAdABwAHAAdAB4AHAAeAB8AHQAgAB4AGwAgAB0AGwAhACAAIgAjACQAIgAkACUAJgAiACUAJwAlACgAKAAlACkAKAApACoAKgApACsALAAtAC4ALwAwADEAMgAzADQAMgA1ADMANgA3ADgAOAA3ADkAOgA7ADwAOgA9ADsAPgA/AEAAPgBBAD8AQgBDAEQAQgBEAEUAQgBGAEMARgBHAEMARgBIAEcARwBIAEkASABKAEkASwBCAEUASwBMAEIASwBFAE0ATgBLAE0ATwBLAE4A")],
+"material": SubResource("StandardMaterial3D_ydq3a"),
+"name": "Material.005",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 314,
+"vertex_data": PackedByteArray("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8t3y51cn/D4S7Wf0QZkGoA9IE64Q0e2u9H8IwFzhcetLuD3U+N+85sS3/9FP15etVIS7wh7fKehpuAnSmgZt3P///78Up3L6////vxwbA+n///+/BeUlF////7+22J/9////v2cnBAL///+/9osnXf///z8Xo7h3////P3BliGH///8/lqNwef///z9EdPei////P4yF6dj///8/A2kbm////z9tXJmG////PwcVaNLVQKvG8BQd0tdCz8cCIKPOa1GEyZEhxKGff9m/wQUDqR5dC8M6WbeKnsq5uD+qiH2c8uKlRdcyV1b/5f+l8wA2tw/p4pbOTG/3+XeRsv+R0mAPs9v//32lAABA7Sjvo04CALiSjfCfTwIAuJL//32lAABA7Z/PjnD8/0Xtgdr/f///QO2BWv9/gdr/v+5cVoh72v+/fSX/f32l/7+bMSeReKX/vwAAfaWBWv+/KBGbsYZa/r+1D5WwhVr+vwAAfaWBWv+/t/cXIwAAPK3LYTQeH+NBUcthNB5N4N5Oy2E0HmjiGFDLYTQejva3cMthNB7Bn+dEjDsuU7YKf4fkNBpLOwI1/9s9PU1PBRGHlTzGWdEMnIu8UWNDYw3wi5s8Qy4x8k30wTIjQmn7ovjQLHNEkPVl+OQ0GkuR/dqAOSZqQ8jyg/TVl9+gzEfbrY2UoZ5uR9+rMphWmelG2aun5sznC7kp1CgRm7H///+/9iWZwf///78/JtfB////v702tNH///+/qDaf0f///7/kSVrn////v9NJRuf///+/D6d5+v///7/WueHi////v4G5Q+P///+/58uUz////7/YQT6m////P5sxJ5H///8/mUH1pf///z+gUai2////P7RRvLb///8/RmfSyf///z9bZ+PJ////P4WF7tj///8/u5x8xv///z8cnSjG////P2qwF7T///8/m2HUkv///z/uXFaI////P1phcZL///8/42j+mv///z8idOOi////P1CCTKf///8/XoJIp////z+KjfSh////Pw6OnKH///8/MphWmf///z99nk1t////P7meqm3///8/TpcsZf///z8llwZl////PymMQ13///8/+32XWP///z/bfaJY////P5py8V3///8/DXJQXv///z+SYqxh////P5/PjnD///8/w75vWv///z/3vqta////P2evT0r///8/P68pSv///z88mmg3////PwWaOjf///8/OXzEJf///z8MfOYl////PwZk2Tj///8/lGM8Of///z+8UWND////PyZH+Rv///+/mzxDLv///7/CRmsc////vztaxQP///+/GVrzA////79otz0a////vzq3Bhr///+/T8pnL////78oyj8v////v2/axD7///+/q9r4Pv///7+N8J9P////v7f3FyP///+/qu25Hv///79N7X0e////vyvlThf///+/J933C////79D3SoM////v10nIwL///+/ryHxDf///78NImUN////v1MebR3///+/dh6PGv///79WCO3c////v3ESWuH///+/1RKb4f///7/+GuPo////v/ciRPT///+/4yIh9P///7+x2K79////v2He7/H///+/Cd5z8v///7+n5szn////vwJbCWL6IRSYkmKsYSUkeZpqsBe0TWWftrXFd6fybQq5aNKtqKt7Qb271UWqMYDPv/vQ/6c9eca8hthNuiaS48bqzIvOn5pXyefLlM/MmlLJ/NcJr+CGIMO41UOqi39xwPUd/SQD3urndh6PGrLa0uQnADEAsDRBWicAMQBBNAlar9MMHuAz4Vmv0wweQDTsWT6e11P+MyamPp7XUwc0/aUwgCaAsjS8pTCAJoBENPOlvwt62TA0WMafDVnZuDZXxzUZRM3ZUMHLqRlbzeBRQsyy/4XSvA0x2xbq3D6CC3PpduTfM+EYd+ps24k8GRGv8MrdWzGLEQjptu/mTkUGk+5577tOFAaK7qf/raVHAXbtp/+tpQAAR+0VzflMJ//P/yvHn0EfBND8ksR7RHv/2/8kxVhRF/kZh4jBBkcf+82CuMZ9Xnj8B4+QzkRvw/lskVHaV4C9/oiSmgAkWvxauMCaACRaklr/vzkGUak6XR/DjhSqlNV/6b+aEKCrrmI2wvEeJKyNcUHD9ikcqsx/BsAWKB6uA3m1weItBKjThlu+tiuSnpmOB70XK/+PRJ3LvcUob4XMote8/yjKhdWi9LzaJWR/bKX/vxxZAIx4y725g1rIf3La/7+yUXGT1L+jucNRdZN+vra4Fk1KmCOwjLT0TNOXeq/zs9dOYp4MsQe3yq+RdPXx7qAwsK1ynvDAnwKwp2an55SY5K8VZp7mA5iErmtfBexEmA==")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_qho7p")
+
+[sub_resource type="Animation" id="Animation_g2c50"]
+resource_name = "Crouch"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CollisionShape3D:shape:height")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [2.0, 1.4]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CollisionShape3D:position")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 1, 0), Vector3(0, 0.6, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CameraController:position")
+tracks/2/interp = 2
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 1.75, -0.095), Vector3(0, 1.2, -0.095)]
+}
+
+[sub_resource type="Animation" id="Animation_ytt2e"]
+resource_name = "JumpEnd"
+length = 0.55
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CameraController:rotation:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0),
+"points": PackedFloat32Array(0, -0.25, 0.045, 0, -0.0284194, -0.0272807, -0.046, 0, 0.00833333, 0.000227742, 0, -0.45, 0.00152864, 0.25, 0),
+"times": PackedFloat32Array(0, 0.133333, 0.55)
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CameraController:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.55),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 1.5, -0.095), Vector3(0, 1.45, -0.095), Vector3(0, 1.5, -0.095)]
+}
+
+[sub_resource type="Animation" id="Animation_100wk"]
+resource_name = "JumpStart"
+length = 0.55
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CameraController:rotation:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.0333333, -0.000976525, -0.0273946, -0.064, 0, 0.1, 0.00409936, 0, -0.0166667, 0.00312283, 0.25, 0),
+"times": PackedFloat32Array(0, 0.2, 0.55)
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CameraController:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.55),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 1.5, -0.095), Vector3(0, 1.45, -0.095), Vector3(0, 1.5, -0.095)]
+}
+
+[sub_resource type="Animation" id="Animation_u0brt"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CollisionShape3D:shape:height")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [2.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CollisionShape3D:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 1, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CameraController:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 1.75, -0.095)]
+}
+tracks/3/type = "bezier"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("CameraController:position:x")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/4/type = "bezier"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("CameraController:position:y")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(1.75, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/5/type = "bezier"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("CameraController:position:z")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/6/type = "bezier"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("CameraController/MainCamera:position:x")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/7/type = "bezier"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("CameraController/MainCamera:position:y")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/8/type = "bezier"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("CameraController/MainCamera:position:z")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("CameraController:rotation")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("CeilingDetection:position")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 1.5, 0)]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("PlayerStateMachine/SlidingPlayerState:SPEED")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [6.0]
+}
+tracks/12/type = "value"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("CameraController/MainCamera:fov")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [85.0]
+}
+tracks/13/type = "bezier"
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/path = NodePath("CameraController:rotation:x")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+
+[sub_resource type="Animation" id="Animation_iueou"]
+resource_name = "Sliding"
+length = 5.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CollisionShape3D:shape:height")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [2.0, 1.5]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CollisionShape3D:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 1, 0), Vector3(0, 0.75, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CameraController:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 1.5, -0.095), Vector3(0, 1, -0.095)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("CameraController:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.5, 3, 4.9),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(0, 0, 0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("CeilingDetection:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 1.5, 0), Vector3(0, 1, 0)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("PlayerStateMachine/SlidingPlayerState:SPEED")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(1, 5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [6.0, 4.0]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("CameraController/MainCamera:fov")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0, 0.3, 4.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [85.0, 90.0, 75.0]
+}
+tracks/7/type = "method"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("PlayerStateMachine/SlidingPlayerState")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(5),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"finish"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_jgoah"]
+resource_name = "Sprinting"
+loop_mode = 1
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CameraController/MainCamera:position:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
+"points": PackedFloat32Array(0, 0, 0, 0.135, 0, 0.115991, -0.233333, 0.0246752, 0.1, -0.0246752, 0.00831725, -0.0666667, 0.0762689, 0.0666667, -0.0740257, -0.0544924, -0.166667, 0.00835711, 0.1, 0.00672961, 0.000368882, -0.065, 0, 0, 0),
+"times": PackedFloat32Array(0, 0.333333, 0.5, 0.7, 1)
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CameraController/MainCamera:position:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0, 0),
+"points": PackedFloat32Array(0, 0, 0, 0.074, 0, 0.0531813, -0.059, 0, 0.06, 0, -0.0253308, -0.166667, 0.00367666, 0.133333, 0.00070705, 0.120477, -0.133, 0, 0.133, 0, -0.016358, -0.067, 0, 0.114, 0, 0.000368882, -0.12, 0, 0, 0),
+"times": PackedFloat32Array(0, 0.2, 0.366667, 0.633333, 0.8, 1)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CameraController/MainCamera:position:z")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0, 0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.128217, 0.266667, 0.6, 0.766988, 0.991667)
+}
+
+[sub_resource type="Animation" id="Animation_268ag"]
+resource_name = "Walking"
+length = 2.0
+loop_mode = 1
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CameraController:position:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
+"points": PackedFloat32Array(0.014759, -0.25, 0, 0.266667, -0.0019124, 0, -0.3, -0.00341188, 0.3, -0.00175848, -0.0149857, -0.25, 0, 0.2, 0.00248011, 0, -0.266667, 0.0018239, 0.266667, 0.00237504, 0.014759, -0.3, -0.00246354, 0.25, 0),
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2)
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CameraController:position:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
+"points": PackedFloat32Array(1.71858, -0.25, 0, 0.233333, 0.0193272, 1.81475, -0.241667, -0.0157246, 0.258333, -0.0100065, 1.71858, -0.258333, 0.0267614, 0.208333, 0.0238272, 1.81475, -0.241667, -0.0107213, 0.258333, -0.011436, 1.71554, -0.366667, 0.0426356, 0.25, 0),
+"times": PackedFloat32Array(0.025, 0.466667, 1.025, 1.46667, 2)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CameraController:position:z")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2)
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_u0brt"]
+_data = {
+&"Crouch": SubResource("Animation_g2c50"),
+&"JumpEnd": SubResource("Animation_ytt2e"),
+&"JumpStart": SubResource("Animation_100wk"),
+&"RESET": SubResource("Animation_u0brt"),
+&"Sliding": SubResource("Animation_iueou"),
+&"Sprinting": SubResource("Animation_jgoah"),
+&"Walking": SubResource("Animation_268ag")
+}
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_g2c50"]
+
+[node name="FPSController" type="CharacterBody3D" node_paths=PackedStringArray("CAMERA_CONTROLLER", "ANIMATIONPLAYER", "CROUCH_SHAPECAST")]
+script = ExtResource("1_g2c50")
+CAMERA_CONTROLLER = NodePath("CameraController/MainCamera")
+ANIMATIONPLAYER = NodePath("Animations")
+CROUCH_SHAPECAST = NodePath("CeilingDetection")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+visible = false
+shape = SubResource("CapsuleShape3D_0vg3i")
+
+[node name="PlaceholderMesh" type="MeshInstance3D" parent="CollisionShape3D"]
+visible = false
+material_override = SubResource("StandardMaterial3D_0vg3i")
+mesh = SubResource("CapsuleMesh_0vg3i")
+
+[node name="CameraController" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+
+[node name="MainCamera" type="Camera3D" parent="CameraController"]
+cull_mask = 3
+current = true
+fov = 85.0
+
+[node name="WeaponRig" type="Node3D" parent="CameraController/MainCamera"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.238628)
+
+[node name="Weapon" type="Node3D" parent="CameraController/MainCamera/WeaponRig"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.224, -0.188, 0.044)
+script = ExtResource("2_f6whd")
+WEAPON_TYPE = ExtResource("3_f6whd")
+sway_noise = SubResource("NoiseTexture2D_f6whd")
+
+[node name="Weapon" type="MeshInstance3D" parent="CameraController/MainCamera/WeaponRig/Weapon"]
+unique_name_in_owner = true
+layers = 2
+mesh = ExtResource("4_f6whd")
+
+[node name="WeaponShadow" type="MeshInstance3D" parent="CameraController/MainCamera/WeaponRig/Weapon"]
+unique_name_in_owner = true
+visible = false
+layers = 2
+mesh = SubResource("ArrayMesh_3gvbh")
+skeleton = NodePath("")
+
+[node name="Animations" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_u0brt")
+}
+
+[node name="CeilingDetection" type="ShapeCast3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("SphereShape3D_g2c50")
+target_position = Vector3(0, 0.5, 0)
+debug_shape_custom_color = Color(1, 0, 0.0333333, 1)
+
+[node name="UserInterface" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="Reticle" type="CenterContainer" parent="UserInterface" node_paths=PackedStringArray("RETICLE_LINES", "PLAYER_CONTROLLER")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_u0brt")
+RETICLE_LINES = [NodePath("Top"), NodePath("Right"), NodePath("Bottom"), NodePath("Left")]
+PLAYER_CONTROLLER = NodePath("../..")
+DOT_COLOR = Color(0.805213, 0.636502, 0.464913, 1)
+
+[node name="Top" type="Line2D" parent="UserInterface/Reticle"]
+points = PackedVector2Array(0, -5, 0, -15)
+width = 1.5
+
+[node name="Right" type="Line2D" parent="UserInterface/Reticle"]
+points = PackedVector2Array(0, 5, 0, 15)
+closed = true
+width = 1.5
+
+[node name="Bottom" type="Line2D" parent="UserInterface/Reticle"]
+points = PackedVector2Array(5, 0, 15, 0)
+width = 1.5
+
+[node name="Left" type="Line2D" parent="UserInterface/Reticle"]
+points = PackedVector2Array(-5, 0, -15, 0)
+width = 1.5
+
+[node name="DebugPanel" type="PanelContainer" parent="UserInterface"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 210.0
+offset_bottom = 50.0
+theme = ExtResource("3_rgc6g")
+script = ExtResource("4_28gv0")
+
+[node name="MarginContainer" type="MarginContainer" parent="UserInterface/DebugPanel"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UserInterface/DebugPanel/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="PlayerStateMachine" type="Node" parent="." node_paths=PackedStringArray("CURRENT_STATE")]
+script = ExtResource("5_kk6m4")
+CURRENT_STATE = NodePath("IdlePlayerState")
+
+[node name="IdlePlayerState" type="Node" parent="PlayerStateMachine"]
+script = ExtResource("6_0aebk")
+
+[node name="WalkingPlayerState" type="Node" parent="PlayerStateMachine"]
+script = ExtResource("7_268ag")
+
+[node name="SprintingPlayerState" type="Node" parent="PlayerStateMachine"]
+script = ExtResource("10_iueou")
+metadata/_custom_type_script = "uid://bg3wsgb1h0icm"
+
+[node name="CrouchingPlayerState" type="Node" parent="PlayerStateMachine"]
+script = ExtResource("9_jyql6")
+metadata/_custom_type_script = "uid://bg3wsgb1h0icm"
+
+[node name="SlidingPlayerState" type="Node" parent="PlayerStateMachine"]
+script = ExtResource("10_100wk")
+metadata/_custom_type_script = "uid://bg3wsgb1h0icm"
+
+[node name="JumpingPlayerState" type="Node" parent="PlayerStateMachine"]
+script = ExtResource("11_100wk")
+metadata/_custom_type_script = "uid://bg3wsgb1h0icm"
+
+[node name="FallingPlayerState" type="Node" parent="PlayerStateMachine"]
+script = ExtResource("12_ytt2e")
+metadata/_custom_type_script = "uid://bg3wsgb1h0icm"
+
+[node name="WeaponViewport" type="SubViewportContainer" parent="."]
+light_mask = 2
+visibility_layer = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SubViewport" type="SubViewport" parent="WeaponViewport"]
+transparent_bg = true
+handle_input_locally = false
+canvas_cull_mask = 4293918723
+size = Vector2i(886, 498)
+render_target_update_mode = 4
+script = ExtResource("14_1hlee")
+
+[node name="WeaponCamera" type="Camera3D" parent="WeaponViewport/SubViewport" node_paths=PackedStringArray("MAIN_CAMERA")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.79156, 0.0306065)
+cull_mask = 2
+fov = 88.0386
+near = 0.001
+script = ExtResource("15_jynee")
+MAIN_CAMERA = NodePath("../../../CameraController/MainCamera")
+
+[connection signal="animation_started" from="Animations" to="." method="_on_crouching_animation_started"]
