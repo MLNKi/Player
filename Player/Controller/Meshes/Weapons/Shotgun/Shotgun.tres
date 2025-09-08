@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="Weapons" load_steps=3 format=3 uid="uid://bvye6l4nelkjc"]
+
+[ext_resource type="Script" uid="uid://cy0870h4ir5l2" path="res://Player/Controller/Scripts/Weapons.gd" id="1_7xn4f"]
+[ext_resource type="ArrayMesh" uid="uid://v2tq0aw54keq" path="res://Player/Controller/Meshes/Weapons/Shotgun/Shotgun.res" id="1_gsh2f"]
+
+[resource]
+script = ExtResource("1_7xn4f")
+name = &"Shotgun"
+position = Vector3(0.133, -0.097, 0.005)
+rotation = Vector3(0, 90, 0)
+scale = Vector3(1, 1, 1)
+sway_min = Vector2(-20, -20)
+sway_max = Vector2(20, 20)
+sway_speed_position = 0.07
+sway_speed_rotation = 0.1
+sway_amount_position = 0.1
+sway_amount_rotation = 30.0
+idle_sway_adjustment = 10.0
+idle_sway_rotation_strength = 360.0
+random_sway_amount = 5.0
+mesh = ExtResource("1_gsh2f")
+shadow = false
+metadata/_custom_type_script = "uid://cy0870h4ir5l2"

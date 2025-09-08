@@ -4,6 +4,9 @@ class_name WalkingPlayerState extends PlayerMovementState
 @export var ACCELERATION: float = 0.1
 @export var DECELERATION: float = 0.3
 @export var TOP_ANIM_SPEED : float = 1.4
+@export var WEAPON_BOB_SPD : float = 5.0
+@export var WEAPON_BOB_H : float = 3.0
+@export var WEAPON_BOB_V : float = 1.0
 
 func enter(previous_state):
 	ANIMATION.play("Walking", -1.0, 1.0)
@@ -15,6 +18,9 @@ func update(delta):
 	PLAYER.update_gravity(delta)
 	PLAYER.update_input(SPEED, ACCELERATION, DECELERATION)
 	PLAYER.update_velocity()
+	
+	WEAPON.sway_weapon(delta, false)
+	WEAPON._weapon_bob(delta, WEAPON_BOB_SPD, WEAPON_BOB_H, WEAPON_BOB_V)
 	
 	set_animation_speed(PLAYER.velocity.length())
 	if PLAYER.velocity.length() == 0.0:
@@ -36,3 +42,6 @@ func _input(event):
 	
 	if PLAYER.velocity.y < -3.0 and !PLAYER.is_on_floor():
 		transition.emit("FallingPlayerState")
+	
+	if Input.is_action_just_pressed("Attack"):
+		WEAPON._attack()

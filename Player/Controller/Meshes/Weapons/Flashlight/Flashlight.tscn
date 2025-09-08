@@ -138,8 +138,6 @@ shadow_mesh = SubResource("ArrayMesh_7wk6u")
 
 [node name="Flashlight" type="Node3D"]
 script = ExtResource("2_7wk6u")
-sway_speed = null
-reset = null
 
 [node name="Weapon" type="MeshInstance3D" parent="."]
 unique_name_in_owner = true

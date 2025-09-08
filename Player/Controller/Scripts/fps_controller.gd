@@ -12,7 +12,7 @@ const JUMP_VELOCITY = 6.5
 @export var CAMERA_CONTROLLER : Camera3D
 @export var ANIMATIONPLAYER : AnimationPlayer
 @export var CROUCH_SHAPECAST : Node3D
-
+@export var WEAPON_CONTROLLER : WeaponController
 
 #Essas variáveis são somente para controle e olhar do Player
 #var _speed : float
@@ -39,10 +39,10 @@ func _ready():
 	#Detecção de colisão ao agachar para o CharacterBody3D
 	CROUCH_SHAPECAST.add_exception($".")
 	
-func _input(event):
-	#Esc no InputMap sai da cena rodando
-	if event.is_action_pressed("Exit"):
-		get_tree().quit()
+#func _input(event):
+	##Esc no InputMap sai da cena rodando
+	#if event.is_action_pressed("Exit"):
+		#get_tree().quit()
 		
 func _unhandled_input(event):
 	#Esses Inputs só são para rotação do mouse de modo geral

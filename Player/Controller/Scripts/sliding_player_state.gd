@@ -10,7 +10,7 @@ class_name SlidingPlayerState extends PlayerMovementState
 
 func enter(previous_state) -> void:
 	set_tilt(PLAYER._current_rotation)
-	ANIMATION.get_animation("Sliding").track_set_key_value(4, 8, PLAYER.velocity.length())
+	ANIMATION.get_animation("Sliding").track_set_key_value(4, 1, PLAYER.velocity.length())
 	ANIMATION.speed_scale = 1.0
 	ANIMATION.play("Sliding", -1.0, SLIDE_ANIM_SPEED)
 
@@ -24,8 +24,8 @@ func set_tilt(player_rotation) -> void:
 	tilt.z = clamp(TILT_AMOUNT * player_rotation, -0.1, 0.1)
 	if tilt.z == 0.0:
 		tilt.z = 0.05
-	ANIMATION.get_animation("Sliding").track_set_key_value(7, 1, tilt)
-	ANIMATION.get_animation("Sliding").track_set_key_value(7, 2, tilt)
+	ANIMATION.get_animation("Sliding").track_set_key_value(3, 1, tilt)
+	ANIMATION.get_animation("Sliding").track_set_key_value(3, 2, tilt)
 
 func finish():
 	transition.emit("CrouchingPlayerState")

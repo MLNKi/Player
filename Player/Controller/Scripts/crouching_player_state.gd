@@ -4,6 +4,9 @@ class_name CrouchingPlayerState extends PlayerMovementState
 @export var ACCELERATION: float = 0.1
 @export var DECELERATION: float = 0.25
 @export_range(1, 6, 0.1) var CROUCH_SPEED: float = 4.0
+@export var WEAPON_BOB_SPD : float = 2.0
+@export var WEAPON_BOB_H : float = 3.0
+@export var WEAPON_BOB_V : float = 1.0
 
 @onready var CROUCH_SHAPECAST: ShapeCast3D = %CeilingDetection
 
@@ -25,10 +28,16 @@ func update(delta):
 	PLAYER.update_input(SPEED, ACCELERATION, DECELERATION)
 	PLAYER.update_velocity()
 	
+	WEAPON.sway_weapon(delta, false)
+	WEAPON._weapon_bob(delta, WEAPON_BOB_SPD, WEAPON_BOB_H, WEAPON_BOB_V)
+	
 	# Handle slide when crouching while moving fast
 	if Input.is_action_just_pressed("Crouch") and PLAYER.velocity.length() > 5.0:
 		transition.emit("SlidingPlayerState")
 	
+	if Input.is_action_just_pressed("Attack"):
+		WEAPON._attack()
+		
 	# Existing crouch release logic
 	if Input.is_action_just_released("Crouch"):
 		uncrouch()

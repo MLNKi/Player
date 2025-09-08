@@ -5,7 +5,7 @@
 
 [resource]
 script = ExtResource("1_vdysp")
-name = &""
+name = &"Crowbar"
 position = Vector3(0.224822, -0.26476, 0)
 rotation = Vector3(0, 92, 0)
 scale = Vector3(1, 1, 1)
