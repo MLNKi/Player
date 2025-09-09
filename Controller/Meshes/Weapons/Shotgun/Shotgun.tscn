@@ -1,0 +1,148 @@
+[gd_scene load_steps=21 format=3 uid="uid://bxq2dq81v6270"]
+
+[ext_resource type="Script" uid="uid://ddq0qdbeacxmt" path="res://Player/Controller/Scripts/init_weapon.gd" id="1_d24cj"]
+[ext_resource type="Resource" uid="uid://bvye6l4nelkjc" path="res://Player/Controller/Meshes/Weapons/Shotgun/Shotgun.tres" id="1_ki3px"]
+[ext_resource type="Script" uid="uid://dn4pou3k5eja4" path="res://Player/Controller/Scripts/weapon_recoil_physical.gd" id="3_13ev3"]
+[ext_resource type="Shader" uid="uid://byf07bgfmusfx" path="res://Player/Controller/Meshes/Weapons/Shotgun/Lightning.gdshader" id="3_37uab"]
+[ext_resource type="ArrayMesh" uid="uid://v2tq0aw54keq" path="res://Player/Controller/Meshes/Weapons/Shotgun/Shotgun.res" id="5_fyva4"]
+[ext_resource type="Script" uid="uid://cytm6wjjd8byh" path="res://Player/Controller/Scripts/muzzle_flash.gd" id="6_6wj07"]
+
+[sub_resource type="Gradient" id="Gradient_6wj07"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_dhxdy"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_37uab"]
+color_ramp = SubResource("Gradient_6wj07")
+noise = SubResource("FastNoiseLite_dhxdy")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6wj07"]
+albedo_color = Color(0.352621, 0.16534, 0.0445692, 1)
+metallic = 1.0
+roughness = 0.7
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dhxdy"]
+albedo_color = Color(0.180299, 0.151882, 0.123248, 1)
+metallic = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mj0ml"]
+albedo_color = Color(0.247991, 0.189983, 0.0965745, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_81lee"]
+albedo_color = Color(0.190762, 0.190762, 0.190762, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ndcp0"]
+emission_enabled = true
+emission = Color(0, 0.233334, 1, 1)
+emission_energy_multiplier = 100.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_t4l3u"]
+render_priority = 0
+shader = ExtResource("3_37uab")
+shader_parameter/base_color = Color(0.97, 0.0161667, 0, 0.392157)
+shader_parameter/pulse_color = Color(1, 1, 1, 0.392157)
+shader_parameter/speed = 0.1
+shader_parameter/scale = 0.1
+shader_parameter/distortion = 0.1
+shader_parameter/shield_power = 0.0
+shader_parameter/rim_power = 1.95
+shader_parameter/pulse_frequency = 4.96
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_6wj07"]
+angle_min = -54.3
+angle_max = 115.7
+inherit_velocity_ratio = 0.485
+spread = 65.0
+flatness = 0.15
+initial_velocity_max = 30.0
+gravity = Vector3(0, 0, 0)
+
+[sub_resource type="Gradient" id="Gradient_dhxdy"]
+offsets = PackedFloat32Array(0, 0.447368, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0.25098, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_mj0ml"]
+gradient = SubResource("Gradient_dhxdy")
+fill = 2
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t4l3u"]
+transparency = 3
+alpha_hash_scale = 2.0
+alpha_antialiasing_mode = 0
+albedo_color = Color(1, 0, 0, 1)
+albedo_texture = SubResource("GradientTexture2D_mj0ml")
+roughness = 0.0
+emission_enabled = true
+emission = Color(1, 0, 0, 1)
+emission_energy_multiplier = 5.0
+emission_texture = SubResource("GradientTexture2D_mj0ml")
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_vin7r"]
+material = SubResource("StandardMaterial3D_t4l3u")
+size = Vector2(0.01, 0.01)
+subdivide_width = 1
+
+[node name="Weapon" type="Node3D"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0)
+script = ExtResource("1_d24cj")
+WEAPON_TYPE = ExtResource("1_ki3px")
+sway_noise = SubResource("NoiseTexture2D_37uab")
+
+[node name="RecoilPosition" type="Node3D" parent="." node_paths=PackedStringArray("weapon")]
+script = ExtResource("3_13ev3")
+recoil_amount = Vector3(0.05, -0.7, 0.15)
+snap_amount = 15.0
+speed = 20.0
+weapon = NodePath("..")
+
+[node name="Weapon" type="MeshInstance3D" parent="RecoilPosition"]
+unique_name_in_owner = true
+layers = 3
+mesh = ExtResource("5_fyva4")
+surface_material_override/0 = SubResource("StandardMaterial3D_6wj07")
+surface_material_override/1 = SubResource("StandardMaterial3D_dhxdy")
+surface_material_override/2 = SubResource("StandardMaterial3D_mj0ml")
+surface_material_override/3 = SubResource("StandardMaterial3D_81lee")
+surface_material_override/5 = SubResource("StandardMaterial3D_6wj07")
+surface_material_override/6 = SubResource("StandardMaterial3D_ndcp0")
+surface_material_override/7 = SubResource("ShaderMaterial_t4l3u")
+
+[node name="WeaponShadow" type="MeshInstance3D" parent="RecoilPosition"]
+unique_name_in_owner = true
+visible = false
+layers = 2
+mesh = ExtResource("5_fyva4")
+
+[node name="MuzzleFlash" type="Node3D" parent="." node_paths=PackedStringArray("weapon", "light", "emitter")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.453966, -0.0116632, 0)
+script = ExtResource("6_6wj07")
+weapon = NodePath("..")
+light = NodePath("OmniLight3D")
+emitter = NodePath("GPUParticles3D")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="MuzzleFlash"]
+visible = false
+light_color = Color(1, 0, 0, 1)
+light_energy = 3.0
+light_indirect_energy = 0.0
+light_volumetric_fog_energy = 3.0
+light_bake_mode = 1
+shadow_enabled = true
+shadow_bias = 10.0
+shadow_normal_bias = 0.0
+shadow_transmittance_bias = 0.84
+omni_attenuation = 3.0
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="MuzzleFlash"]
+emitting = false
+amount = 500
+lifetime = 0.1
+one_shot = true
+randomness = 1.0
+process_material = SubResource("ParticleProcessMaterial_6wj07")
+draw_pass_1 = SubResource("QuadMesh_vin7r")
