@@ -7,8 +7,6 @@
 size = Vector3(1.5, 1.5, 1.5)
 texture_albedo = ExtResource("1_bilxn")
 texture_normal = ExtResource("2_84fcp")
-emission_energy = 100.0
-modulate = Color(0, 0.0833333, 1, 1)
 distance_fade_enabled = true
 distance_fade_begin = 50.0
 distance_fade_length = 50.0

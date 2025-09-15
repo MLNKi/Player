@@ -46,8 +46,8 @@ func _input(event):
 	#Esc no InputMap sai da cena rodando
 	if event.is_action_pressed("Exit"):
 		get_tree().quit()
-	if event.is_action_pressed("Interact"):
-		interact()
+	#if event.is_action_pressed("Interact"):
+		#interact()
 		
 func _unhandled_input(event):
 	#Esses Inputs só são para rotação do mouse de modo geral
@@ -81,7 +81,7 @@ func _physics_process(delta):
 	Global.debug.add_property("Velocity","%.2f" % velocity.length(), 2)
 
 	update_camera(delta)
-	interact_cast()
+	#interact_cast()
 	
 func update_gravity(delta):
 	velocity.y -= gravity * delta
@@ -100,24 +100,3 @@ func update_input(SPEED: float, ACCELERATION: float, DECELERATION: float):
 		
 func update_velocity():
 	move_and_slide()
-
-func interact_cast() -> void:
-	var camera = Global.player.CAMERA_CONTROLLER
-	var space_state = camera.get_world_3d().direct_space_state
-	var screen_center = get_viewport().size / 2
-	var origin = camera.project_ray_origin(screen_center)
-	var end = origin + camera.project_ray_normal(screen_center) * interact_distance
-	var query = PhysicsRayQueryParameters3D.create(origin, end)
-	query.collide_with_bodies = true
-	var result = space_state.intersect_ray(query)
-	var current_cast_result = result.get("collider")
-	if current_cast_result != interact_cast_result:
-		if interact_cast_result and interact_cast_result.has_user_signal("unfocused"):
-			interact_cast_result.emit_signal("unfocused")
-		interact_cast_result = current_cast_result
-		if interact_cast_result and interact_cast_result.has_user_signal("focused"):
-			interact_cast_result.emit_signal("focused")
-
-func interact() -> void:
-	if interact_cast_result and interact_cast_result.has_user_signal("interacted"):
-		interact_cast_result.emit_signal("interacted")

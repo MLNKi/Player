@@ -19,5 +19,5 @@ idle_sway_adjustment = 10.0
 idle_sway_rotation_strength = 360.0
 random_sway_amount = 5.0
 mesh = ExtResource("1_vyeva")
-shadow = true
+shadow = false
 metadata/_custom_type_script = "uid://cy0870h4ir5l2"
